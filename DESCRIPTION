@@ -1,0 +1,38 @@
+Type: Package
+Package: CLWBM
+Title: Cold Lake Water Balance Model 
+Version: 0.8
+Date: 2026-09-07
+Authors@R: c(person("Kevin", "Shook", 
+              email = "kshook@kshook.ca", 
+              role = c("cre", "aut"))
+             )                
+Author: Kevin Shook [cre, aut],
+Maintainer: Kevin Shook <kshook@kshook.ca>
+Description: Models water balance of Cold Lake to simulate changes in the lake level caused by
+modelled climate change scenarios. The model requires forcings (inputs) from CRHM models of
+the Cold Lake and Primrose Lake basins.
+License: AGPL-3 
+URL: https://github.com/KevinShook/CLWBM
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+  shiny,
+  shinyjs,
+  shinyvalidate,
+  DT, 
+  bslib,
+  shinyFiles,
+  plotly,
+  tidyr,
+  ggplot2
+
+Suggests: 
+    knitr,
+    testthat, 
+    rmarkdown,
+    readr
+VignetteBuilder: knitr
+LazyData: true
+Encoding: UTF-8
+RoxygenNote: 7.3.3
