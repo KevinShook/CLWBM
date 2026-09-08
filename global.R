@@ -118,9 +118,13 @@ test_muskingum <- function(K, x, delt){
 
 
 daily_withdrawals <- function(monthly_withdrawals, start_date, end_date){
-  monthly_withdrawals$days <- days_in_month(monthly_withdrawals$Date)
-  monthly_withdrawals$daily <- monthly_withdrawals$Withdrawal / monthly_withdrawals$days
-  modeldate <- seq.Date(from = start_date, to = end_date)
+  monthly_withdrawals$date <- as.Date(monthly_withdrawals$date)
+  monthly_withdrawals$year <- as.numeric(format(monthly_withdrawals$date, format = "%Y"))
+  monthly_withdrawals$month <- as.numeric(format(monthly_withdrawals$date, format = "%m"))
+  monthly_withdrawals$days <- days_in_month(monthly_withdrawals$date)
+  monthly_withdrawals$daily <- monthly_withdrawals$withdrawal / monthly_withdrawals$days
+  
+  modeldate <- seq.Date(from = start_date, to = end_date, by = 1)
   month <- as.numeric(format(modeldate, format = "%m"))
   year <-  as.numeric(format(modeldate, format = "%Y"))
   daily <- c(0)
@@ -307,7 +311,7 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   outflow_vol <- c(0)
   updated_vol <- c(0)
   groundwater_vol <- c(0)
-  
+
   daily_withdrawal <- daily_withdrawals(monthlywithdrawals, start_date, end_date)
   
   # get parameters
@@ -324,7 +328,7 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   interlake_fluxes <- read.csv(file = interlake_file, header = TRUE)
   interlake_fluxes$date <- as.Date(interlake_fluxes$date)
   interlake_fluxes <- interlake_fluxes[interlake_fluxes$date >= start_date &
-                                         interlake_fluxes$date <= end_date, c("date", "outflow_q")]
+                                         interlake_fluxes$date <= end_date,]
   interlake_vol <- interlake_fluxes$gauge_06AF008_q * 24 * 3600    # m3/s -> m3/d
   
   cold_rating_curves <- cold_rating_table()
@@ -334,8 +338,7 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   
   # set fluxes to specified dates
   coldlakefluxes$date <- as.Date(coldlakefluxes$date)
-  start_date <- as.Date(start_date)
-  end_date <- as.Date(end_date)
+
   
   
   coldlakefluxes <- coldlakefluxes[coldlakefluxes$date >= start_date &
@@ -391,7 +394,7 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
     }
   }
 
-  df <- data.frame(cold_fluxes$date, 
+  cold_output_df <- data.frame(coldlakefluxes$date, 
                    current_elevation, 
                    coldlakefluxes$q, 
                    coldlakefluxes$routed_inflow_vol,
@@ -402,18 +405,18 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
                    daily_withdrawal$daily, 
                    outflow_Q)
   
-  names(df) <- c("date", 
+  names(cold_output_df) <- c("date", 
                  "elevation", 
                  "local_inflow_q",
-                 "routed_inflow_q", 
-                 "local_inflow_vol", 
+                 "routed_local_inflow_vol", 
                  "interlake_vol", 
                  "precip+snowmelt_vol", 
                  "evap_vol", 
                  "groundwater_vol",
-                 "daily_withdrawal", 
+                 "daily_withdrawal_vol", 
                  "outflow_q")
   
   cold_outfile <- paste0(rundir, "/", runname, "_Cold_Lake.csv")
   write.csv(cold_output_df, file = cold_outfile, row.names = FALSE)
+  return(cold_output_df)
 }

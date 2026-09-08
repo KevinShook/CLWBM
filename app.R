@@ -146,10 +146,16 @@ server <- function(input, output) {
         infile <- paste0(rundir, "/", runname, "_Primrose_Lake.csv")
         primrose <- read.csv(file = infile, header = TRUE)
         primrose$date <- as.Date(primrose$date)
-        p <- 
-            primrose |> 
+        file1 <- input$parameterfile
+        parameters <- read.csv(file1$datapath, header = TRUE)
+        primrose_outlet_el <- parameters$Value[5]
+        
+        p <- primrose |> 
             ggplot(aes(date, elevation)) + 
-            geom_line() +
+            geom_line() + 
+            geom_abline(slope = 0, 
+                        intercept = primrose_outlet_el, 
+                        colour = "red" ) +
             ggtitle("Primrose Lake simulation") +
             ylab("Surface elevation (m)") +
             xlab("Date")
@@ -208,16 +214,20 @@ server <- function(input, output) {
       startdate <- input$startdate
       enddate <- input$enddate
       
+      
       file1 <- input$parameterfile
-      file2 <- input$coldlakeforcingsfile
+      file2 <- input$coldforcingsfile
+      file3 <- input$withdrawalsfile
+      
       parameters <- read.csv(file1$datapath, header = TRUE)
-      interlakeforcings <- read.csv(file2$datapath, header = TRUE) 
+      coldlakeforcings <- read.csv(file2$datapath, header = TRUE) 
+      monthlywithdrawals <- read.csv(file3$datapath, header = TRUE) 
       
       runname <- input$runname
       rundir <- parseDirPath(volumes, input$directory)
       
       
-      vals <- run_interlake(startdate, enddate, parameters, interlakeforcings, runname, rundir)
+      vals <- run_coldlake(startdate, enddate, parameters, coldlakeforcings, monthlywithdrawals, runname, rundir)
       return(vals)
     }) |>
       bindEvent(input$coldlake)
@@ -226,7 +236,7 @@ server <- function(input, output) {
     output$coldlakeplot <-  renderPlotly({ 
       runname <- input$runname
       rundir <- parseDirPath(volumes, input$directory)
-      infile <- paste0(rundir, "/", runname, "_Colde_Lake.csv")
+      infile <- paste0(rundir, "/", runname, "_Cold_Lake.csv")
       cold <- read.csv(file = infile, header = TRUE)
       cold$date <- as.Date(cold$date)
       p <- 
