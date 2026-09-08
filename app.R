@@ -75,7 +75,8 @@ server <- function(input, output) {
     
     output$runname <- renderText({ input$runname })
     output$description <- renderText({ input$description })
-    volumes <- c(Home = fs::path_home(), "R Installation" = R.home(), getVolumes()())
+   # volumes <- c(Home = fs::path_home(), "R Installation" = R.home(), getVolumes()())
+    volumes <- c(Home = fs::path_home(),  getVolumes()())
     shinyDirChoose(input, "directory", roots = volumes, 
                    restrictions = system.file(package = "base"), 
                    allowDirCreate = TRUE)
@@ -236,7 +237,7 @@ server <- function(input, output) {
     output$coldlakeplot <-  renderPlotly({ 
       runname <- input$runname
       rundir <- parseDirPath(volumes, input$directory)
-      infile <- paste0(rundir, "/", runname, "_Cold_Lake.csv")
+      infile <- paste0(rundir, "/", runname, "_Colde_Lake.csv")
       cold <- read.csv(file = infile, header = TRUE)
       cold$date <- as.Date(cold$date)
       p <- 
