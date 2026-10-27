@@ -209,7 +209,7 @@ run_primrose <- function(start_date, end_date, parameters, primrose_fluxes, runn
   }
   
   df <- data.frame(primrose_fluxes$date, current_elevation, primrose_fluxes$q, primrose_fluxes$routed_q, inflow_vol, precip_vol, evap_vol, groundwater_vol, outflow_Q)
-  names(df) <- c("date", "elevation", "loal_inflow_q","routed_local_inflow_q", "local_inflow_vol", "precip+snowmelt_vol", "evap_vol", "groundwater_vol", "outflow_q")
+  names(df) <- c("date", "elevation", "local_inflow_q","routed_local_inflow_q", "local_inflow_vol", "precip+snowmelt_vol", "evap_vol", "groundwater_vol", "outflow_q")
   
   outfile <- paste0(rundir, "/", runname, "_Primrose_Lake.csv")
   write.csv(df, file = outfile, row.names = FALSE)

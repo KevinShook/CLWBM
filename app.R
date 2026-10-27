@@ -15,8 +15,7 @@ ui <- fluidPage(
     nav_panel("Set run settings", 
     tags$h1("Cold Lake model settings"),
     textAreaInput("runname", "Model run name", rows = 1),
-    shinyDirButton("directory", "Folder select", "Model output folder"),
-    textOutput("rundir"),
+
     
     textAreaInput("description", "Model run description", rows = 1),
    
@@ -24,6 +23,11 @@ ui <- fluidPage(
     dateInput("enddate", "Run end date:", value = "2100-12-31"),
      
     fileInput("parameterfile", "Choose model parameter CSV File", accept = ".csv"),
+    
+    tags$h2("Model output location"),
+    textInput("rundir","Model output folder", value = "~"),
+    
+    tags$h2("Model forcing data files"),
             
     fileInput("withdrawalsfile", "Choose Cold Lake withdrawals CSV File", accept = ".csv"),
     
@@ -75,18 +79,10 @@ server <- function(input, output) {
     
     output$runname <- renderText({ input$runname })
     output$description <- renderText({ input$description })
-   # volumes <- c(Home = fs::path_home(), "R Installation" = R.home(), getVolumes()())
-    volumes <- c(Home = fs::path_home(),  getVolumes()())
-    shinyDirChoose(input, "directory", roots = volumes, 
-                   restrictions = system.file(package = "base"), 
-                   allowDirCreate = TRUE)
     
     output$rundir <- renderText({
-        if (is.integer(input$directory)) {
-           # cat("No directory has been selected")
-        } else {
-            parseDirPath(volumes, input$directory)
-        }
+      file1 <- input$parameterfile
+      
     })
     
     output$saved <- renderText({
@@ -102,7 +98,7 @@ server <- function(input, output) {
         cold_forcings_file <- file5$name        
         startdate <- as.character(input$startdate)
         enddate <- as.character(input$enddate)
-        rundir <- parseDirPath(volumes, input$directory)
+        rundir <- input$rundir
         runname <- input$runname
         description <- input$description
         save_time <- as.character(Sys.time())
@@ -133,7 +129,7 @@ server <- function(input, output) {
         primroseforcings <- read.csv(file2$datapath, header = TRUE) 
 
         runname <- input$runname
-        rundir <- parseDirPath(volumes, input$directory)
+        rundir <- input$rundir
    
         
         vals <- run_primrose(startdate, enddate, parameters, primroseforcings, runname, rundir)
@@ -143,7 +139,7 @@ server <- function(input, output) {
     
     output$primroseplot <-  renderPlotly({ 
         runname <- input$runname
-        rundir <- parseDirPath(volumes, input$directory)
+        rundir <- input$rundir
         infile <- paste0(rundir, "/", runname, "_Primrose_Lake.csv")
         primrose <- read.csv(file = infile, header = TRUE)
         primrose$date <- as.Date(primrose$date)
@@ -179,7 +175,7 @@ server <- function(input, output) {
       interlakeforcings <- read.csv(file2$datapath, header = TRUE) 
       
       runname <- input$runname
-      rundir <- parseDirPath(volumes, input$directory)
+      rundir <- input$rundir
       
       
       vals <- run_interlake(startdate, enddate, parameters, interlakeforcings, runname, rundir)
@@ -190,7 +186,7 @@ server <- function(input, output) {
     
     output$interlakeplot <-  renderPlotly({ 
       runname <- input$runname
-      rundir <- parseDirPath(volumes, input$directory)
+      rundir <- input$rundir
       infile <- paste0(rundir, "/", runname, "_Interlake.csv")
       interlake <- read.csv(file = infile, header = TRUE)
       interlake$date <- as.Date(interlake$date)
@@ -225,7 +221,7 @@ server <- function(input, output) {
       monthlywithdrawals <- read.csv(file3$datapath, header = TRUE) 
       
       runname <- input$runname
-      rundir <- parseDirPath(volumes, input$directory)
+      rundir <- input$rundir
       
       
       vals <- run_coldlake(startdate, enddate, parameters, coldlakeforcings, monthlywithdrawals, runname, rundir)
@@ -236,8 +232,8 @@ server <- function(input, output) {
     
     output$coldlakeplot <-  renderPlotly({ 
       runname <- input$runname
-      rundir <- parseDirPath(volumes, input$directory)
-      infile <- paste0(rundir, "/", runname, "_Colde_Lake.csv")
+      rundir <- input$rundir
+      infile <- paste0(rundir, "/", runname, "_Cold_Lake.csv")
       cold <- read.csv(file = infile, header = TRUE)
       cold$date <- as.Date(cold$date)
       p <- 
