@@ -416,7 +416,12 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
                  "daily_withdrawal_vol", 
                  "outflow_q")
   
+  
+  
+  
   cold_outfile <- paste0(rundir, "/", runname, "_Cold_Lake.csv")
   write.csv(cold_output_df, file = cold_outfile, row.names = FALSE)
   return(cold_output_df)
 }
+
+

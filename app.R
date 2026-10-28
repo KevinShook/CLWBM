@@ -24,8 +24,8 @@ ui <- fluidPage(
      
     fileInput("parameterfile", "Choose model parameter CSV File", accept = ".csv"),
     
-    tags$h2("Model output location"),
-    textInput("rundir","Model output folder", value = "~"),
+    tags$h2("Temporary file location"),
+    textInput("rundir","Model output folder", value = "/tmp"),
     
     tags$h2("Model forcing data files"),
             
@@ -35,8 +35,11 @@ ui <- fluidPage(
     fileInput("interlakeforcingsfile", "Choose Interlake CRHM forcings CSV File", accept = ".csv"),
     fileInput("coldforcingsfile", "Choose Cold Lake CRHM forcings CSV File", accept = ".csv"),
     
-    actionButton("saverun", "Save run information"),
+    actionButton("saverun", "Save run information to server"),
     textOutput("saved"),
+    
+    downloadButton("downloadrun", "Download run info to your computer")
+    
 
     ),
     nav_panel("Primrose Lake", 
@@ -46,7 +49,8 @@ ui <- fluidPage(
       DT::dataTableOutput("primrosetable"),
     
       actionButton("plotprimrose", "Plot Primrose Lake"),
-      plotlyOutput("primroseplot") 
+      plotlyOutput("primroseplot"), 
+      downloadButton("downloadPrimroseLake", "Download Primrose Lake output")
     
     ),
     nav_panel("Interlake",
@@ -55,7 +59,8 @@ ui <- fluidPage(
       DT::dataTableOutput("interlaketable"),
     
       actionButton("plotinterlake", "Plot Interlake"),
-      plotlyOutput("interlakeplot") 
+      plotlyOutput("interlakeplot"),
+      downloadButton("downloadInterlake", "Download Interlake output")
     ),    
     nav_panel("Cold Lake", 
       tags$h1("Run Cold Lake Lake model"),
@@ -63,7 +68,9 @@ ui <- fluidPage(
       DT::dataTableOutput("coldlaketable"),
       
       actionButton("plotcoldlake", "Plot Cold Lake"),
-      plotlyOutput("coldlakeplot") 
+      plotlyOutput("coldlakeplot"),
+      downloadButton("downloadColdLake", "Download Cold Lake output")
+
     ),
       
     nav_panel("Edit parameters",
@@ -118,6 +125,40 @@ server <- function(input, output) {
         bindEvent(input$saverun)
 
     
+    output$downloadrun <- downloadHandler(
+      filename = function() { paste(input$runname,"_settings.csv",sep="") },
+      content = function(file) {
+        file1 <- input$parameterfile
+        file2 <- input$withdrawalsfile
+        file3 <- input$primroseforcingsfile
+        file4 <- input$interlakeforcingsfile
+        file5 <- input$coldforcingsfile
+        parameter_file <- file1$name
+        withdrawal_file <- file2$name
+        primrose_forcings_file <- file3$name
+        interlake_forcings_file <- file4$name
+        cold_forcings_file <- file5$name        
+        startdate <- as.character(input$startdate)
+        enddate <- as.character(input$enddate)
+        rundir <- input$rundir
+        runname <- input$runname
+        description <- input$description
+        save_time <- as.character(Sys.time())
+        settings_file <-  paste0(rundir, "/", runname, "_settings.csv")
+        
+        setting_name <- c("Save time", "Run name", "Description", "Start date", 
+                          "End date", "Parameter file", "Withdrawals file", 
+                          "Primrose Lake forcings file", "Interlake forcings file", 
+                          "Cold Lake forcings file")
+        setting_value <- c(save_time, runname , description, startdate, enddate, 
+                           parameter_file, withdrawal_file, primrose_forcings_file,
+                           interlake_forcings_file, cold_forcings_file)
+        df <- data.frame(setting_name, setting_value)
+        write.csv(df, file, row.names=F)
+      }
+    ) 
+    
+    
     output$primrosetable <-  DT::renderDataTable({ 
         startdate <- input$startdate
         enddate <- input$enddate
@@ -164,6 +205,17 @@ server <- function(input, output) {
     }) |>
         bindEvent(input$plotprimrose)
     
+    output$downloadPrimroseLake <- downloadHandler(
+      filename = function() { paste(input$runname,"_PrimroseLake.csv",sep="") },
+      content = function(file) {
+        runname <- input$runname
+        rundir <- input$rundir
+        infile <- paste0(rundir, "/", runname, "_Primrose_Lake.csv")
+        primrose <- read.csv(file = infile, header = TRUE)
+        write.csv(primrose, file, row.names=F)
+      }
+    ) 
+    
     
     output$interlaketable <-  DT::renderDataTable({ 
       startdate <- input$startdate
@@ -205,6 +257,17 @@ server <- function(input, output) {
       
     }) |>
       bindEvent(input$plotinterlake)
+    
+    output$downloadInterlake <- downloadHandler(
+      filename = function() { paste(input$runname,"_Interlake.csv",sep="") },
+      content = function(file) {
+        runname <- input$runname
+        rundir <- input$rundir
+        infile <- paste0(rundir, "/", runname, "_Interlake.csv")
+        inter <- read.csv(file = infile, header = TRUE)
+        write.csv(inter, file, row.names=F)
+      }
+    )  
     
     
     output$coldlaketable <-  DT::renderDataTable({ 
@@ -250,6 +313,17 @@ server <- function(input, output) {
       
     }) |>
       bindEvent(input$plotcoldlake)
+    
+    output$downloadColdLake <- downloadHandler(
+      filename = function() { paste(input$runname,"_ColdLake.csv",sep="") },
+      content = function(file) {
+        runname <- input$runname
+        rundir <- input$rundir
+        infile <- paste0(rundir, "/", runname, "_Cold_Lake.csv")
+        cold <- read.csv(file = infile, header = TRUE)
+        write.csv(cold,file,row.names=F)
+      }
+    )  
     
     output$modelparams <- DT::renderDT({
         req(input$editparams)
