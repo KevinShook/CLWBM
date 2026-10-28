@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![license](https://img.shields.io/badge/license-GPL3-lightgrey.svg)](https://choosealicense.com/)
+[![license](https://img.shields.io/badge/license-AGPL3-lightgrey.svg)](https://choosealicense.com/)
 <!-- badges: end -->
 
 
