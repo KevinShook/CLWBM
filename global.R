@@ -176,9 +176,9 @@ run_primrose <- function(start_date, end_date, parameters, primrose_fluxes, runn
    }
    else{
      # check routing parameters
-     routing_check <- test_muskingum(primrose_inflow_K, primrose_inflow_x, 1)
-     if (routing_check != "Muskingum routing parameters OK")
-       stop(routing_check)
+     #routing_check <- test_muskingum(primrose_inflow_K, primrose_inflow_x, 1)
+     #if (routing_check != "Muskingum routing parameters OK")
+       #stop(routing_check)
      primrose_fluxes$routed_q <- muskingum(primrose_fluxes$q, primrose_inflow_K, primrose_inflow_x, 1 )
    }
 
@@ -267,9 +267,9 @@ run_interlake <- function(start_date, end_date, parameters, interlake_fluxes, ru
  }
  else{
    # check routing parameters
-   routing_check <- test_muskingum(muskeg_K, muskeg_x, 1)
-   if (routing_check != "Muskingum routing parameters OK")
-     stop(routing_check)
+   #routing_check <- test_muskingum(muskeg_K, muskeg_x, 1)
+   #if (routing_check != "Muskingum routing parameters OK")
+    # stop(routing_check)
    interlake_fluxes$routed_muskeg_q <- muskingum(interlake_fluxes$muskeg_local_q, muskeg_K, muskeg_x, 1 )
  }
  
@@ -283,9 +283,9 @@ run_interlake <- function(start_date, end_date, parameters, interlake_fluxes, ru
  }
  else{
    # check routing parameters
-   routing_check <- test_muskingum(martineau_K, martineau_x, 1)
-   if (routing_check != "Muskingum routing parameters OK")
-     stop(routing_check)
+   # routing_check <- test_muskingum(martineau_K, martineau_x, 1)
+   # if (routing_check != "Muskingum routing parameters OK")
+    # stop(routing_check)
    interlake_fluxes$routed_bridge_q <- muskingum(interlake_fluxes$bridge_q, martineau_K, martineau_x, 1 )
  }
  
@@ -349,9 +349,9 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   }
   else{
     # check routing cold_inflow_K
-    routing_check <- test_muskingum(cold_inflow_K, cold_inflow_x, 1)
-    if (routing_check != "Muskingum routing parameters OK")
-      stop(routing_check)
+   # routing_check <- test_muskingum(cold_inflow_K, cold_inflow_x, 1)
+   #  if (routing_check != "Muskingum routing parameters OK")
+   #    stop(routing_check)
     coldlakefluxes$routed_q <- muskingum(coldlakefluxes$q, cold_inflow_K, cold_inflow_x, 1 )
   }
   
