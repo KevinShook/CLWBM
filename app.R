@@ -187,20 +187,21 @@ server <- function(input, output) {
         file1 <- input$parameterfile
         parameters <- read.csv(file1$datapath, header = TRUE)
         primrose_outlet_el <- parameters$Value[5]
-        
+        colours <- c("Modeled" = "blue", "Outlet" = "red")
         p <- primrose |> 
-            ggplot(aes(date, elevation)) + 
-            geom_line() + 
-            geom_abline(slope = 0, 
-                        intercept = primrose_outlet_el, 
-                        colour = "red" ) +
+            ggplot() + 
+            geom_line(aes(date, elevation, colour = "Modeled")) + 
+            geom_hline(aes(yintercept = primrose_outlet_el, colour = "Outlet" )) +
             ggtitle("Primrose Lake simulation") +
             ylab("Surface elevation (m)") +
-            xlab("Date")
+            xlab("Date") +
+            scale_colour_manual(values = colours, name = "Elevation") 
+
+          
         
         graph_file <- paste0(rundir, "/", runname, "_Primrose_Lake_elevation.png")
         ggsave(file = graph_file, width = 8, height = 5)
-        ggplotly(p) 
+        ggplotly(p, dynamicTicks = TRUE) 
 
     }) |>
         bindEvent(input$plotprimrose)
@@ -253,7 +254,7 @@ server <- function(input, output) {
       
       graph_file <- paste0(rundir, "/", runname, "_Interlake_flows.png")
       ggsave(file = graph_file, width = 8, height = 5)
-      ggplotly(p) 
+      ggplotly(p, dynamicTicks = TRUE) 
       
     }) |>
       bindEvent(input$plotinterlake)
@@ -299,17 +300,24 @@ server <- function(input, output) {
       infile <- paste0(rundir, "/", runname, "_Cold_Lake.csv")
       cold <- read.csv(file = infile, header = TRUE)
       cold$date <- as.Date(cold$date)
-      p <- 
-        cold |> 
-        ggplot(aes(date, elevation)) + 
-        geom_line() +
+      
+      file1 <- input$parameterfile
+      parameters <- read.csv(file1$datapath, header = TRUE)
+      cold_outlet_el <- parameters$Value[10] + 534.501
+      colours <- c("Modeled" = "blue", "Outlet" = "red")
+      
+      p <- cold |> 
+        ggplot() +
+        geom_line(aes(date, elevation, colour = "Modeled")) + 
+        geom_hline(aes(yintercept = cold_outlet_el, colour = "Outlet" )) +
         ggtitle("Cold Lake simulation") +
         ylab("Surface elevation (m)") +
-        xlab("Date")
+        xlab("Date") +
+        scale_colour_manual(values = colours, name = "Elevation") 
       
       graph_file <- paste0(rundir, "/", runname, "_Cold_Lake_elevation.png")
       ggsave(file = graph_file, width = 8, height = 5)
-      ggplotly(p) 
+      ggplotly(p, dynamicTicks = TRUE) 
       
     }) |>
       bindEvent(input$plotcoldlake)

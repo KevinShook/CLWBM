@@ -312,7 +312,7 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   updated_vol <- c(0)
   groundwater_vol <- c(0)
 
-  daily_withdrawal <- daily_withdrawals(monthlywithdrawals, start_date, end_date)
+
   
   # get parameters
   cold_starting_el <- parameters$Value[2]
@@ -339,10 +339,13 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   # set fluxes to specified dates
   coldlakefluxes$date <- as.Date(coldlakefluxes$date)
 
-  
+  daily_withdrawal <- daily_withdrawals(monthlywithdrawals, start_date, end_date)
   
   coldlakefluxes <- coldlakefluxes[coldlakefluxes$date >= start_date &
                                      coldlakefluxes$date <= end_date, ]
+  
+  selected_dates <- daily_withdrawal$date %in% coldlakefluxes$date
+  daily_withdrawal <- daily_withdrawal[selected_dates,]
   
   if (cold_inflow_K <= 0 | cold_inflow_x < 0) {
     coldlakefluxes$routed_q <- coldlakefluxes$q
@@ -361,7 +364,6 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   num_rows <- nrow(coldlakefluxes)
   elevation <- cold_starting_el
   
-  cold_rating_table
   
   for (j in 1:num_rows) {
     date <- coldlakefluxes$date[j]
@@ -393,7 +395,6 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
       elevation <- vol2stage(cold_rating_curves, updated_vol[j], cold_min_stage, method = "linear")
     }
   }
-
   cold_output_df <- data.frame(coldlakefluxes$date, 
                    current_elevation, 
                    coldlakefluxes$q, 
