@@ -250,7 +250,8 @@ server <- function(input, output) {
         geom_line() +
         ggtitle("Interlake simulation") +
         ylab("Daily discharge (m³/s)") +
-        xlab("Date")
+        xlab("Date") +
+        labs(colour = "Discharge")
       
       graph_file <- paste0(rundir, "/", runname, "_Interlake_flows.png")
       ggsave(file = graph_file, width = 8, height = 5)
