@@ -164,10 +164,11 @@ run_primrose <- function(start_date, end_date, parameters, primrose_fluxes, runn
   primrose_weir_width <- parameters$Value[3]
   primrose_weir_coefficient <- parameters$Value[4]
   primrose_weir_sill <- parameters$Value[5]
-  primrose_evap_mult <- parameters$Value[6]
-  primrose_groundwater_q <- parameters$Value[8]
-  primrose_inflow_K <- parameters$Value[11]
-  primrose_inflow_x <- parameters$Value[12]
+  primrose_weir_exponent <- parameters$Value[6]
+  primrose_evap_mult <- parameters$Value[7]
+  primrose_groundwater_q <- parameters$Value[9]
+  primrose_inflow_K <- parameters$Value[12]
+  primrose_inflow_x <- parameters$Value[13]
 
   primrose_fluxes$q <- pmax(primrose_fluxes$q, 0)
   
@@ -188,7 +189,6 @@ run_primrose <- function(start_date, end_date, parameters, primrose_fluxes, runn
   # now calculate lake inflows and outflows for each date
   
   primrose_fluxes$inflow_vol <- primrose_fluxes$routed_q * 24 * 3600    # m3/s -> m3
-  primrose_weir_exponent <- 1.5
   
   
   # loop through each day calculating inflow and outflow volumes
@@ -233,10 +233,10 @@ run_interlake <- function(start_date, end_date, parameters, interlake_fluxes, ru
   martineau_below_confluence_frac <- martineau_below_confluence_area / total_basin_area
   
 # get routing parameters
-  muskeg_K <- parameters$Value[13]
-  muskeg_x <- parameters$Value[14]
-  martineau_K <- parameters$Value[15]
-  martineau_x <- parameters$Value[16]
+  muskeg_K <- parameters$Value[14]
+  muskeg_x <- parameters$Value[15]
+  martineau_K <- parameters$Value[16]
+  martineau_x <- parameters$Value[17]
   
 
 # read in primrose outputs
@@ -316,11 +316,11 @@ run_coldlake <- function(start_date, end_date, parameters, coldlakefluxes, month
   
   # get parameters
   cold_starting_el <- parameters$Value[2]
-  cold_weir_ht <- parameters$Value[10]
-  cold_evap_mult <- parameters$Value[7]
-  cold_groundwater_q <- parameters$Value[9]
-  cold_inflow_K <- parameters$Value[17]
-  cold_inflow_x <- parameters$Value[18]
+  cold_weir_ht <- parameters$Value[11]
+  cold_evap_mult <- parameters$Value[8]
+  cold_groundwater_q <- parameters$Value[10]
+  cold_inflow_K <- parameters$Value[18]
+  cold_inflow_x <- parameters$Value[19]
   
   # read in Interlake output
   
